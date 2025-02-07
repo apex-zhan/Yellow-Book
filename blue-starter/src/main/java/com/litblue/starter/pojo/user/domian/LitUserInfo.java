@@ -1,10 +1,9 @@
 package com.litblue.starter.pojo.user.domian;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.litblue.starter.core.BaseEntity;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class LitUserInfo extends BaseEntity {

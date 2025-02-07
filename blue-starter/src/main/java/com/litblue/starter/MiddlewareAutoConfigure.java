@@ -14,9 +14,6 @@ import org.springframework.context.annotation.Configuration;
         "com.litblue.starter.advice",
         "com.litblue.starter.cache",
         "com.litblue.starter.sql",
-        "com.litblue.starter.interceptor",
-        "com.litblue.starter.http",
-        "com.litblue.starter.async"
 })
 public class
 MiddlewareAutoConfigure {
