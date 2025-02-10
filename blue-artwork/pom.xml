@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.litblue</groupId>
-        <artifactId>blue-serve</artifactId>
+        <groupId>com.blue</groupId>
+        <artifactId>lit-blue-serve</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.litblue.artwork</groupId>
+    <groupId>com.blue.artwork</groupId>
     <artifactId>blue-artwork</artifactId>
 
     <properties>
@@ -22,20 +22,20 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.litblue.api</groupId>
+            <groupId>com.blue.api</groupId>
             <artifactId>blue-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!--common-->
         <dependency>
-            <groupId>com.litblue.common</groupId>
+            <groupId>com.blue.common</groupId>
             <artifactId>blue-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!--中间件集成-->
         <dependency>
-            <groupId>com.litblue.starter</groupId>
+            <groupId>com.blue.starter</groupId>
             <artifactId>blue-starter</artifactId>
             <version>1.0-SNAPSHOT</version>
             <exclusions>
