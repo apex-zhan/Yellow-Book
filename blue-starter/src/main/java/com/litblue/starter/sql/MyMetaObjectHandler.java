@@ -12,6 +12,7 @@ import java.util.Date;
 
 /**
  * 只能登录情况下才能填充
+ * @ConditionalOnClass(MvcConfig.class)：当且仅当类路径中存在 MvcConfig 类时，才会加载被注解的配置类或 Bean
  */
 @Component
 @ConditionalOnClass(MvcConfig.class)
@@ -26,6 +27,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         Date now = new Date();
+        //从threadLocal中获取用户信息
         String loginId = String.valueOf(UserContext.getUser());
         this.strictInsertFill(metaObject, "createTime", Date.class, now);
         this.strictInsertFill(metaObject, "createBy", String.class, loginId);
@@ -36,7 +38,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     }
 
     /**
-     * 修改操作
+     * 修改操作,只需要更新时间和更新人
      *
      * @param metaObject 元对象
      */

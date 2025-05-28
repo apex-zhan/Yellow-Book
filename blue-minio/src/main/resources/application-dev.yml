@@ -1,0 +1,9 @@
+minio:
+  # minio地址
+  endpoint: http://192.168.100.13:9000
+  # 账户
+  username: u37U1nlAy8sjR2XOlUAg
+  # 密码
+  password: wBc0vxFjMeAdIbNG2QMTGNQzyvvgMmZyPyh41IGT
+  defaultBucketName: blue-oss
+

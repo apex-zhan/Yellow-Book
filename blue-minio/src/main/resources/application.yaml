@@ -1,0 +1,11 @@
+server:
+  port: 8085
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB #单个文件最大为
+      max-request-size: 100MB #单次请求文件总数大小
+      multipart:
+        resolve-lazily: true #是否延迟解析文件，默认false
+        location: /path/to/upload/directory
