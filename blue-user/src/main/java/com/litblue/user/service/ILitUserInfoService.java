@@ -15,4 +15,29 @@ public interface ILitUserInfoService extends IService<LitUserInfo> {
      * @return
      */
     AjaxResult loginUser(LitUserInfoDto litUserInfoDto);
+
+    /**
+     * 用户退出
+     *
+     * @return
+     */
+    AjaxResult logout();
+
+    /**
+     * 编辑用户信息接口
+     *
+     * @param litUserInfo
+     * @return
+     */
+
+    AjaxResult editUserInfo(LitUserInfo litUserInfo);
+
+    /**
+     * 查询用户信息接口
+     *
+     * @param userId
+     * @return
+     */
+
+    LitUserInfo queryUserInfo(Long userId);
 }

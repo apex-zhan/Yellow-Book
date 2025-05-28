@@ -14,8 +14,10 @@ import com.litblue.user.mapper.LitUserInfoMapper;
 import com.litblue.user.service.ILitUserInfoService;
 import exception.BizIllegalException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import utils.RandomUtils;
+import utils.UserContext;
 import utils.VerificationCodeGenerator;
 
 import javax.annotation.PostConstruct;
@@ -25,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ILitUserInfoServiceImpl extends ServiceImpl<LitUserInfoMapper, LitUserInfo> implements ILitUserInfoService {
-
     private LitUserInfoMapper litUserInfoMapper;
     private RedisCache redisCache;
 
@@ -39,7 +41,7 @@ public class ILitUserInfoServiceImpl extends ServiceImpl<LitUserInfoMapper, LitU
     @Override
     public AjaxResult getPhoneCode(String phone) {
         String code = VerificationCodeGenerator.generateVerificationCode();
-        this.redisCache.setCacheObject("phoneCode:" + phone, code, 5, TimeUnit.MINUTES);
+        this.redisCache.setCacheObject("phoneCode:" + phone, code, 10, TimeUnit.MINUTES);
         return new AjaxResult("短信发送成功", "200");
     }
 
@@ -61,6 +63,7 @@ public class ILitUserInfoServiceImpl extends ServiceImpl<LitUserInfoMapper, LitU
             this.redisCache.setCacheObject(RedisKeys.PUBLIC_KEY, aPublicKey);
             this.redisCache.setCacheObject(RedisKeys.PRIVATE_KEY, aPrivateKey);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -87,9 +90,12 @@ public class ILitUserInfoServiceImpl extends ServiceImpl<LitUserInfoMapper, LitU
             if (litUserInfo == null) {
                 throw new BizIllegalException("用户不存在");
             }
+            /**
+             * 硬编码问题：私钥 RedisKeys.PRIVATE_KEY 被硬编码在代码中，这是一个安全隐患
+             */
             //加密后的密码
             String pass = litUserInfo.getPass();
-            Object aPrivate = this.redisCache.getCacheObject(RedisKeys.PUBLIC_KEY);
+            Object aPublic = this.redisCache.getCacheObject(RedisKeys.PUBLIC_KEY);
             //解析成明文
             String authPass = SaSecureUtil.rsaDecryptByPrivate(RedisKeys.PRIVATE_KEY, pass);
             if (!authPass.equals(passWord)) {
@@ -139,6 +145,9 @@ public class ILitUserInfoServiceImpl extends ServiceImpl<LitUserInfoMapper, LitU
 //            todo ....
         }
         //会话登录；参考文档：https://sa-token.cc/v/v1.38.0/doc.html#/api/stp-util?id=_2%e3%80%81%e7%99%bb%e5%bd%95%e7%9b%b8%e5%85%b3
+        if (StpUtil.isLogin(litUserInfo.getId())) {
+            return new AjaxResult("您已经登录过了", "200");
+        }
         StpUtil.login(litUserInfo.getId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         HashMap<String, Object> hashmap = new HashMap<>();
@@ -156,5 +165,79 @@ public class ILitUserInfoServiceImpl extends ServiceImpl<LitUserInfoMapper, LitU
     private String securityCodePass(String pass) {
         String publicKey = this.redisCache.getCacheObject(RedisKeys.PUBLIC_KEY);
         return SaSecureUtil.rsaEncryptByPublic(publicKey, pass);
+    }
+
+    /**
+     * 用户退出
+     */
+    @Override
+    public AjaxResult logout() {
+        try {
+            if (StpUtil.isLogin()) {
+                // 获取当前登录用户的ID
+                Object loginId = StpUtil.getLoginId();
+                // 清理相关缓存，例如用户的token缓存
+                redisCache.deleteObject(RedisKeys.DEFINE_TOKEN + loginId);
+                // 清理在线状态缓存
+                redisCache.deleteObject(RedisKeys.AUTH_IS_LOGIN + loginId);
+
+                // 用户退出登录
+                StpUtil.logout();
+                log.info("用户 {} 退出成功", loginId);
+                return new AjaxResult("退出成功", "200", null);
+            }
+            log.info("用户未登录，无法执行退出操作");
+            return new AjaxResult("用户未登入", "", null);
+        } catch (Exception e) {
+            log.error("用户退出时发生异常", e);
+            return new AjaxResult("退出失败，发生异常", "500", null);
+        }
+    }
+
+    /**
+     * 编辑用户信息接口
+     *
+     * @param litUserInfo
+     * @return
+     */
+    @Override
+    public AjaxResult editUserInfo(LitUserInfo litUserInfo) {
+        //1. 拿到用户id
+        Long LoginUserId = UserContext.getUser();
+        // 2. 将获取的用户ID设置到传入的用户信息对象中
+        litUserInfo.setId(LoginUserId);
+        //3. 更新数据库中的信息
+        baseMapper.updateById(litUserInfo);
+        //4. 设置redis缓存键，并删除缓存中原本的用户缓存信息，确保下次获取时从数据库加载最新数据
+        RedisKeys redisKeysUserId = RedisKeys.forUser(String.valueOf(LoginUserId));
+        redisCache.deleteObject(redisKeysUserId.USER_KEY);
+        //调用查询用户接口
+        this.queryUserInfo(LoginUserId);
+        return new AjaxResult("修改成功", "200", litUserInfo);
+    }
+
+    /**
+     * 查询用户信息接口
+     *
+     * @param userId
+     * @return
+     */
+
+    @Override
+    public LitUserInfo queryUserInfo(Long userId) {
+        //设置redis键
+        RedisKeys redisKeys = RedisKeys.forUser(String.valueOf(userId));
+        LitUserInfo litUserInfo = null;
+        //先从缓存中查询
+        litUserInfo = this.redisCache.getCacheObject(redisKeys.USER_KEY);
+        if (litUserInfo != null) {
+            return litUserInfo;
+        }
+        //如果缓存中没有，查询数据库，在添加到缓存中
+        litUserInfo = litUserInfoMapper.selectById(userId);
+        if (litUserInfo != null) {
+            redisCache.setCacheObject(redisKeys.USER_KEY, litUserInfo);
+        }
+        return litUserInfo;
     }
 }

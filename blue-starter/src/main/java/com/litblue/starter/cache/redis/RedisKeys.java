@@ -1,10 +1,7 @@
 package com.litblue.starter.cache.redis;
 
-import com.baomidou.mybatisplus.extension.api.R;
-import com.litblue.starter.pojo.artwork.domain.LitArtworkUser;
 import com.litblue.starter.pojo.artwork.dto.LitArtworkUserDto;
 import com.litblue.starter.pojo.artwork.query.LitArtworkInfoQuery;
-import com.litblue.starter.pojo.im.properties.MsgContentProperties;
 import lombok.Data;
 
 /**
@@ -136,9 +133,9 @@ public class RedisKeys {
 
     /**
      * 获取地图信息
-     * @param latitude
-     * @param longitude
-     * @param loginId
+     * @param latitude 纬度
+     * @param longitude 经度
+     * @param loginId 登录id
      */
     public static RedisKeys forCityMap(String latitude, String longitude, String loginId) {
         RedisKeys keys = new RedisKeys();
