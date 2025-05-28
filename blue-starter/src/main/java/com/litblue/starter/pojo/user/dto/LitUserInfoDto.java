@@ -7,6 +7,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @ToString(callSuper = true)
+/**
+ * 登录用户信息
+ */
 public class LitUserInfoDto {
 
     /**

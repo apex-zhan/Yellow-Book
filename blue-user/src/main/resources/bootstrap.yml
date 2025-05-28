@@ -18,3 +18,4 @@ spring:
           - dataId: shared-jdbc.yaml # 共享mybatis配置
           - dataId: shared-log.yaml # 共享日志配置
           - dataId: shared-redis.yaml # 共享redis配置
+#        namespace: 配置集id

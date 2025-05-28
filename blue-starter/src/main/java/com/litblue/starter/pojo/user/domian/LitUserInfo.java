@@ -1,14 +1,24 @@
 package com.litblue.starter.pojo.user.domian;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.litblue.starter.core.BaseEntity;
 import lombok.Data;
 
+/**
+ * 用户信息
+ *
+ * @author MECHREVO
+ */
 @Data
 public class LitUserInfo extends BaseEntity {
 
     // 主键
+    @TableId(type = IdType.ASSIGN_ID)
+    @JSONField(serializeUsing = String.class)
     private Long id;
 
     // 用户名
@@ -29,7 +39,7 @@ public class LitUserInfo extends BaseEntity {
     // 所属地区
     private String belongCity;
 
-    // 小楠书号
+    // 小黄书号
     private String blueCode;
 
     // 个人简介

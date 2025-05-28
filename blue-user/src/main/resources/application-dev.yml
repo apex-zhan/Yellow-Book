@@ -8,4 +8,10 @@ blue:
   redis:
     host: 192.168.100.13
     pass: 123456
-
+    timeout: 50000
+  map:
+    key: 7EOBZ-2BY6Q-L7L5S-2WUOU-YLLV7-USBNI
+    #周边推荐
+    perimeterUrl: https://apis.map.qq.com/ws/place/v1/explore
+    #直径
+    radius: 1000

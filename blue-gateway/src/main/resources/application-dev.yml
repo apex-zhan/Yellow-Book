@@ -1,0 +1,16 @@
+blue:
+  db:
+    host: 192.168.100.13
+    un: root
+    pw: 123456
+    port: 3306
+  redis:
+    host: 192.168.100.13
+    pass: 123456
+
+    #放行的路径
+  auth:
+    excludePaths:
+      - /user/info/loginUser
+      - /user/info/genPhoneCode
+
