@@ -10,11 +10,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @AutoConfigurationPackage
-@ComponentScan(basePackages = {
-        "com.litblue.starter.advice",
-        "com.litblue.starter.cache",
-        "com.litblue.starter.sql",
-})
-public class
-MiddlewareAutoConfigure {
+@ComponentScan(basePackages =
+        {"com.litblue.starter.advice",
+                "com.litblue.starter.cache",
+                "com.litblue.starter.sql",
+                "com.litblue.starter.http",
+                "com.litblue.starter.interceptor",
+        })
+public class MiddlewareAutoConfigure {
 }

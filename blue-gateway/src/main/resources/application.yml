@@ -1,0 +1,9 @@
+server:
+  # 端口
+  port: 8080
+
+  #允许bean覆盖
+spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
